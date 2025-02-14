@@ -9,15 +9,16 @@ import UIKit
 
 extension UIViewController {
     
-    @MainActor
     func presentGFAlertOnMainThread(title: String, message: String, buttonTitle: String) {
-        let alertVC = GFAlertViewController(
-            alertTitle: title,
-            message: message,
-            buttonTitle: buttonTitle
-        )
-        alertVC.modalPresentationStyle = .overFullScreen
-        alertVC.modalTransitionStyle = .crossDissolve
-        present(alertVC, animated: true)
+        DispatchQueue.main.async {
+            let alertVC = GFAlertViewController(
+                alertTitle: title,
+                message: message,
+                buttonTitle: buttonTitle
+            )
+            alertVC.modalPresentationStyle = .overFullScreen
+            alertVC.modalTransitionStyle = .crossDissolve
+            self.present(alertVC, animated: true)
+        }
     }
 }
