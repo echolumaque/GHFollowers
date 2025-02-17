@@ -22,6 +22,7 @@ class FollowersListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViewController()
+        configureSearchController()
         configureCollectionView()
         getFollowers(page: page)
         configureDataSource()
@@ -45,6 +46,14 @@ class FollowersListViewController: UIViewController {
         collectionView.register(FollowerCell.self, forCellWithReuseIdentifier: FollowerCell.reuseID) // This is like giving a collection view a hint on what the cell's type is. I think this is for optimization purposes?
     }
     
+    func configureSearchController() {
+        let searchController = UISearchController()
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.placeholder = "Search for a username"
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+        
+    }
     
     func getFollowers(page: Int) {
         showLoadingView()
@@ -63,7 +72,7 @@ class FollowersListViewController: UIViewController {
                     return
                 }
                 
-                updateData()
+                updateData(on: followers)
                 
             case .failure(let failure):
                 presentGFAlertOnMainThread(title: "Bad Stuff Happened", message: failure.rawValue, buttonTitle: "Ok")
@@ -81,7 +90,7 @@ class FollowersListViewController: UIViewController {
         }
     }
     
-    func updateData() {
+    func updateData(on followers: [Follower]) {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Follower>()
         snapshot.appendSections([.main])
         snapshot.appendItems(followers)
@@ -102,6 +111,18 @@ extension FollowersListViewController: UICollectionViewDelegate {
             page += 1
             getFollowers(page: page)
         }
+    }
+    
+}
+
+extension FollowersListViewController: UISearchResultsUpdating {
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let filter = searchController.searchBar.text else { return }
+        
+        updateData(on: filter.isEmpty
+                   ? followers
+                   : followers.filter { $0.login.lowercased().contains(filter.lowercased()) })
     }
     
 }

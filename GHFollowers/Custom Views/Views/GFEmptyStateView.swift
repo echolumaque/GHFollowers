@@ -7,7 +7,7 @@
 
 import UIKit
 
-class GFEmptystateView: UIView {
+class GFEmptyStateView: UIView {
     
     let messageLabel = GFTitleLabel(textAlignment: .center, fontSize: 28)
     let logoImageView = UIImageView()
@@ -51,5 +51,5 @@ class GFEmptystateView: UIView {
 }
 
 #Preview {
-    return GFEmptystateView(message: "Hey")
+    return GFEmptyStateView(message: "Hey")
 }
