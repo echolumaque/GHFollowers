@@ -5,12 +5,13 @@
 //  Created by Echo Lumaque on 2/14/25.
 //
 
-import Foundation
+import UIKit
 
 class NetworkManager {
     
     static let shared = NetworkManager()
-    let baseURL = "https://api.github.com/users/"
+    private let baseURL = "https://api.github.com/users/"
+    let cache = NSCache<NSString, UIImage>()
     
     private init() {}
     
@@ -53,4 +54,5 @@ class NetworkManager {
         task.resume() // Starts the network call
         
     }
+    
 }
