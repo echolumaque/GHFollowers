@@ -8,17 +8,17 @@
 import Foundation
 
 struct User: Codable {
-    var login: String
-    var avatarUrl: String
+    let login: String
+    let avatarUrl: String
     var name: String?
     var location: String?
     var bio: String?
-    var publicRepos: Int
-    var publicGists: Int
-    var htmlUrl: String
-    var following: Int
-    var followers: Int
-    var createdAt: String 
+    let publicRepos: Int
+    let publicGists: Int
+    let htmlUrl: String
+    let following: Int
+    let followers: Int
+    let createdAt: String
     
     enum CodingKeys: String, CodingKey {
         case login
@@ -33,4 +33,20 @@ struct User: Codable {
         case followers
         case createdAt = "created_at"
     }
+}
+
+extension User {
+    static let testUser = User(
+        login: "echolumaque",
+        avatarUrl: "https://avatars.githubusercontent.com/u/61021721?v=4",
+        name: "Echo Lumaque",
+        location: "Valenzuela City",
+        bio: "Senior Software Engineer👨🏻‍💻 | Graduated with Latin Honors at Polytechnic University of the Philippines 🎓",
+        publicRepos: 25,
+        publicGists: 0,
+        htmlUrl: "",
+        following: 13,
+        followers: 11,
+        createdAt: "Feb 2020"
+    )
 }

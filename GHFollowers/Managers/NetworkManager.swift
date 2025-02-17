@@ -15,44 +15,55 @@ class NetworkManager {
     
     private init() {}
     
-    func getFollowers(
-        for username: String,
-        page: Int,
-        completed: @escaping (Result<[Follower], GFError>) -> Void
-    ) {
-        
+    func getFollowers(for username: String, page: Int, completed: @escaping (Result<[Follower], GFError>) -> Void) {
         let constructedUrl = "\(baseURL)\(username)/followers?per_page=100&page=\(page)"
-        guard let endPoint = URL(string: constructedUrl) else {
-            completed(.failure(.invalidUsername))
+        baseNetworkCall(for: constructedUrl, completed: completed)
+    }
+    
+    func getUserInfo(for username: String, completed: @escaping (Result<User, GFError>) -> Void) {
+        let constructedUrl = "\(baseURL)\(username)"
+        baseNetworkCall(for: constructedUrl, completed: completed)
+    }
+    
+    private func baseNetworkCall<Success: Codable, Failure: Error>(for constructedUrl: String, completed: @escaping (Result<Success, Failure>) -> Void) {
+        guard let accessToken = ProcessInfo.processInfo.environment["access_token"] else {
+            completed(.failure(GFError.unableToComplete as! Failure))
             return
         }
+        
+        guard let endPoint = URL(string: constructedUrl) else {
+            completed(.failure(GFError.invalidUsername as! Failure))
+            return
+        }
+        
+        var networkRequest = URLRequest(url: endPoint)
+        networkRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
     
-        let task = URLSession.shared.dataTask(with: endPoint) { data, response, error in
+        let task = URLSession.shared.dataTask(with: networkRequest) { data, response, error in
             guard error == nil else {
-                completed(.failure(.unableToComplete))
+                completed(.failure(GFError.unableToComplete as! Failure))
                 return
             }
             
             guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-                completed(.failure(.invalidResponse))
+                completed(.failure(GFError.invalidResponse as! Failure))
                 return
             }
             
             guard let data else {
-                completed(.failure(.invalidData))
+                completed(.failure(GFError.invalidData as! Failure))
                 return
             }
             
             do {
-                let followers = try JSONDecoder().decode([Follower].self, from: data)
-                completed(.success(followers))
+                let parsedData = try JSONDecoder().decode(Success.self, from: data)
+                completed(.success(parsedData))
             } catch {
-                completed(.failure(.invalidData))
+                completed(.failure(GFError.invalidData as! Failure))
             }
         }
         
         task.resume() // Starts the network call
-        
     }
     
 }
