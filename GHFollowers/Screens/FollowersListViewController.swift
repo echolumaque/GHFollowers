@@ -121,6 +121,7 @@ extension FollowersListViewController: UICollectionViewDelegate {
         let follower = activeArray[indexPath.item]
         
         let userInfoVC = UserInfoViewController()
+        userInfoVC.delegate = self
         userInfoVC.username = follower.login
         let navController = UINavigationController(rootViewController: userInfoVC)
         present(navController, animated: true)
@@ -145,6 +146,21 @@ extension FollowersListViewController: UISearchResultsUpdating, UISearchBarDeleg
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         isSearching = false
         updateData(on: followers)
+    }
+    
+}
+
+extension FollowersListViewController: FollowersListViewControllerDelegate {
+    
+    func didRequestFollowers(for username: String) {
+        self.username = username
+        title = username
+        page = 1
+        followers.removeAll()
+        filteredFollowers.removeAll()
+//        collectionView.setContentOffset(.zero, animated: true)
+        updateData(on: followers)
+        getFollowers(page: page)
     }
     
 }
