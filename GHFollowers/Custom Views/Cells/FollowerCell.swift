@@ -46,7 +46,3 @@ class FollowerCell: UICollectionViewCell {
         ])
     }
 }
-
-#Preview {
-    return FollowerCell()
-}

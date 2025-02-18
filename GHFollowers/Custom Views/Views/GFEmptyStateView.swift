@@ -49,7 +49,3 @@ class GFEmptyStateView: UIView {
     }
     
 }
-
-#Preview {
-    return GFEmptyStateView(message: "Hey")
-}

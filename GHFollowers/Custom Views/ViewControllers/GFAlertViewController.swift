@@ -94,7 +94,3 @@ class GFAlertViewController: UIViewController {
     }
     
 }
-
-#Preview {
-    return GFAlertViewController(alertTitle: "Title", message: "Message", buttonTitle: "Btn")
-}

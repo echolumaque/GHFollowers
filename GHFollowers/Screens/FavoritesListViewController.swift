@@ -83,9 +83,7 @@ extension FavoritesListViewController: UITableViewDelegate, UITableViewDataSourc
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // Would be executed when a cell is tapped
         let favorite = favorites[indexPath.row]
-        let destVC = FollowersListViewController()
-        destVC.username = favorite.login
-        destVC.title = favorite.login
+        let destVC = FollowersListViewController(username: favorite.login)
         
         navigationController?.pushViewController(destVC, animated: true)
     }

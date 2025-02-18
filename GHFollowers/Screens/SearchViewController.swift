@@ -28,6 +28,7 @@ class SearchViewController: UIViewController {
     // Gets called everytime when this view appears
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        userNameTextField.text = ""
         navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
@@ -42,9 +43,8 @@ class SearchViewController: UIViewController {
             return
         }
         
-        let followerListVC = FollowersListViewController()
-        followerListVC.username = userNameTextField.text
-        followerListVC.title = userNameTextField.text // The navigation title of the view controller
+        userNameTextField.resignFirstResponder()
+        let followerListVC = FollowersListViewController(username: userNameTextField.text ?? "")
         navigationController?.pushViewController(followerListVC, animated: true)
     }
     
@@ -54,7 +54,7 @@ class SearchViewController: UIViewController {
         logoImageview.image = UIImage(resource: .ghLogo)
         
         NSLayoutConstraint.activate([
-            logoImageview.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 80),
+            logoImageview.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: DeviceTypes.isiPhoneSE || DeviceTypes.isiPhone8Zoomed ? 20 : 80),
             logoImageview.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             logoImageview.heightAnchor.constraint(equalToConstant: 200),
             logoImageview.widthAnchor.constraint(equalToConstant: 200)
@@ -92,8 +92,4 @@ extension SearchViewController: UITextFieldDelegate {
         pushFollowerListVC()
         return true
     }
-}
-
-#Preview {
-    return SearchViewController()
 }

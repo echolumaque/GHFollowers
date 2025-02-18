@@ -91,7 +91,3 @@ class GFUserInfoHeaderViewController: UIViewController {
         ])
     }
 }
-
-#Preview {
-    GFUserInfoHeaderViewController(user: User.testUser)
-}
