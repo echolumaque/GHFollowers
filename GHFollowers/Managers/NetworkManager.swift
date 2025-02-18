@@ -56,7 +56,7 @@ class NetworkManager {
             }
             
             do {
-                let parsedData = try JSONDecoder().decode(Success.self, from: data)
+                let parsedData = try data.decode(to: Success.self)
                 completed(.success(parsedData))
             } catch {
                 completed(.failure(GFError.invalidData as! Failure))

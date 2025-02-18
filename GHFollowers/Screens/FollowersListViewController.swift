@@ -38,6 +38,9 @@ class FollowersListViewController: UIViewController {
     func configureViewController() {
         view.backgroundColor = .systemBackground
         navigationController?.navigationBar.prefersLargeTitles = true
+        
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
+        navigationItem.rightBarButtonItem = addButton
     }
     
     func configureCollectionView() {
@@ -100,6 +103,32 @@ class FollowersListViewController: UIViewController {
         DispatchQueue.main.async { self.dataSource.apply(snapshot, animatingDifferences: true) }
     }
     
+    @objc func addButtonTapped() {
+        showLoadingView()
+        
+        NetworkManager.shared.getUserInfo(for: username) { [weak self] result in
+            guard let self else { return }
+            dismissLoadingView()
+            
+            switch result {
+            case .success(let user):
+                let favorite = Follower(login: user.login, avatarUrl: user.avatarUrl)
+                PersistenceManager.updateWith(favorite: favorite, actionType: .add) { [weak self] error in
+                    guard let self else { return }
+                    guard let error else {
+                        presentGFAlertOnMainThread(title: "Success!", message: "You have successfully favorited this user 🎉!", buttonTitle: "Hooray!")
+                        return
+                    }
+                    
+                    presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok")
+                }
+                
+            case .failure(let error):
+                presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok")
+            }
+        }
+    }
+    
 }
 
 extension FollowersListViewController: UICollectionViewDelegate {
@@ -158,7 +187,6 @@ extension FollowersListViewController: FollowersListViewControllerDelegate {
         page = 1
         followers.removeAll()
         filteredFollowers.removeAll()
-//        collectionView.setContentOffset(.zero, animated: true)
         updateData(on: followers)
         getFollowers(page: page)
     }
