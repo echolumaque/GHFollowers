@@ -7,7 +7,7 @@
 
 import UIKit
 
-class UserInfoViewController: UIViewController {
+class UserInfoViewController: GFDataLoadingViewController {
     
     let headerView = UIView()
     let itemViewOne = UIView()
@@ -32,8 +32,10 @@ class UserInfoViewController: UIViewController {
     }
     
     func getUserInfo() {
+        showLoadingView()
         NetworkManager.shared.getUserInfo(for: username) { [weak self] result in
             guard let self else { return }
+            dismissLoadingView()
             
             switch result {
             case .success(let user):
@@ -56,10 +58,9 @@ class UserInfoViewController: UIViewController {
         add(childVC: repoItemVC, to: itemViewOne)
         add(childVC: followerItemVC, to: itemViewTwo)
         
-        let inputFormatter = Date.getFormatter(dateFormat: "yyyy-MM-dd'T'HH:mm:ssZ")
         let outputFormatter = Date.getFormatter(dateFormat: "MMMM yyyy")
-        let parsedDate = inputFormatter.date(from: user.createdAt) ?? .now
-        self.dateLabel.text = "GitHub user since \(outputFormatter.string(from: parsedDate))"
+        let parsedDateString = outputFormatter.string(from: user.createdAt)
+        dateLabel.text = "GitHub user since \(parsedDateString)"
     }
     
     func layoutUI() {

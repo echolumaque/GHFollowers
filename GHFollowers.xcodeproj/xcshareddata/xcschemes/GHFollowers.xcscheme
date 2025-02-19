@@ -50,13 +50,6 @@
             ReferencedContainer = "container:GHFollowers.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "access_token"
-            value = "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"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

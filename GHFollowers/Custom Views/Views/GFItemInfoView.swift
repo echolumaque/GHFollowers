@@ -52,6 +52,6 @@ class GFItemInfoView: UIView {
     func set(itemInfoType: ItemInfoType, withCount count: Int) {
         symbolImageView.image = UIImage(systemName: itemInfoType.icon)
         titleLabel.text = itemInfoType.title
-        countLabel.text = "\(count)"
+        countLabel.text = count.formattedAsDecimal
     }
 }

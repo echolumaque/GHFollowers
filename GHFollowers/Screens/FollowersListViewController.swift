@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FollowersListViewController: UIViewController {
+class FollowersListViewController: GFDataLoadingViewController {
     
     enum Section { case main }
 
@@ -17,6 +17,7 @@ class FollowersListViewController: UIViewController {
     var page = 1
     var hasMoreFollowers = true
     var isSearching = false
+    var isLoadingMoreFollowers = false
     
     var collectionView: UICollectionView!
     var dataSource: UICollectionViewDiffableDataSource<Section, Follower>!
@@ -64,7 +65,6 @@ class FollowersListViewController: UIViewController {
     func configureSearchController() {
         let searchController = UISearchController()
         searchController.searchResultsUpdater = self
-        searchController.searchBar.delegate = self
         searchController.searchBar.placeholder = "Search for a username"
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
@@ -73,6 +73,8 @@ class FollowersListViewController: UIViewController {
     
     func getFollowers(page: Int) {
         showLoadingView()
+        isLoadingMoreFollowers = true
+        
         NetworkManager.shared.getFollowers(for: username, page: page) { [weak self] result in
             guard let self else { return }
             dismissLoadingView()
@@ -83,7 +85,7 @@ class FollowersListViewController: UIViewController {
                 hasMoreFollowers = !followers.isEmpty
                 
                 if self.followers.isEmpty {
-                    let message = "This user doesn't have any followers. Go follow\nthem 😃."
+                    let message = "This user doesn't have any followers. Go follow them 😃."
                     DispatchQueue.main.async { self.showEmptyStateView(with: message, in: self.view) }
                     return
                 }
@@ -93,6 +95,8 @@ class FollowersListViewController: UIViewController {
             case .failure(let failure):
                 presentGFAlertOnMainThread(title: "Bad Stuff Happened", message: failure.rawValue, buttonTitle: "Ok")
             }
+            
+            isLoadingMoreFollowers = false
         }
     }
     
@@ -149,7 +153,7 @@ extension FollowersListViewController: UICollectionViewDelegate {
         let height = scrollView.frame.height
         
         if offsetY > contentHeight - height {
-            guard hasMoreFollowers else { return }
+            guard hasMoreFollowers, !isLoadingMoreFollowers else { return }
             page += 1
             getFollowers(page: page)
         }
@@ -168,11 +172,12 @@ extension FollowersListViewController: UICollectionViewDelegate {
     
 }
 
-extension FollowersListViewController: UISearchResultsUpdating, UISearchBarDelegate {
+extension FollowersListViewController: UISearchResultsUpdating {
     
     func updateSearchResults(for searchController: UISearchController) {
         guard let filter = searchController.searchBar.text, !filter.isEmpty else {
             isSearching = false
+            filteredFollowers.removeAll()
             updateData(on: followers)
             return
         }
@@ -180,11 +185,6 @@ extension FollowersListViewController: UISearchResultsUpdating, UISearchBarDeleg
         isSearching = true
         filteredFollowers = followers.filter { $0.login.lowercased().contains(filter.lowercased()) }
         updateData(on: filteredFollowers)
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        isSearching = false
-        updateData(on: followers)
     }
     
 }

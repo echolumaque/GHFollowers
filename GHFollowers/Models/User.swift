@@ -18,7 +18,7 @@ struct User: Codable {
     let htmlUrl: String
     let following: Int
     let followers: Int
-    let createdAt: String
+    let createdAt: Date
     
     enum CodingKeys: String, CodingKey {
         case login
@@ -47,6 +47,6 @@ extension User {
         htmlUrl: "",
         following: 13,
         followers: 11,
-        createdAt: "Feb 2020"
+        createdAt: .now
     )
 }

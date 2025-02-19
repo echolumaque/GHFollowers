@@ -25,8 +25,36 @@ class NetworkManager {
         baseNetworkCall(for: constructedUrl, completed: completed)
     }
     
-    private func baseNetworkCall<Success: Codable, Failure: Error>(for constructedUrl: String, completed: @escaping (Result<Success, Failure>) -> Void) {
-        guard let accessToken = ProcessInfo.processInfo.environment["access_token"] else {
+    func downloadImage(from urlString: String, completed: @escaping (UIImage?) -> Void) {
+        if let cachedImage = cache.object(forKey: NSString(string: urlString)) {
+            completed(cachedImage)
+            return
+        }
+        
+        guard let url = URL(string: urlString) else { return }
+        
+        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            guard let self,
+                  error == nil,
+                  let response = response as? HTTPURLResponse, response.statusCode == 200,
+                  let data,
+                  let image = UIImage(data: data) else {
+                completed(nil)
+                return
+            }
+            
+            cache.setObject(image, forKey: NSString(string: urlString))
+            completed(image)
+        }
+        
+        task.resume()
+    }
+    
+    private func baseNetworkCall<Success: Codable, Failure: Error>(
+        for constructedUrl: String,
+        completed: @escaping (Result<Success, Failure>) -> Void
+    ) {
+        guard let accessToken: String = try? Configuration.value(for: "API_KEY") else {
             completed(.failure(GFError.unableToComplete as! Failure))
             return
         }
@@ -56,7 +84,7 @@ class NetworkManager {
             }
             
             do {
-                let parsedData = try data.decode(to: Success.self)
+                let parsedData = try data.decode(to: Success.self, dateDecodingStrategy: .iso8601)
                 completed(.success(parsedData))
             } catch {
                 completed(.failure(GFError.invalidData as! Failure))
