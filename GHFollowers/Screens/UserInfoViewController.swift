@@ -9,6 +9,9 @@ import UIKit
 
 class UserInfoViewController: GFDataLoadingViewController {
     
+    let scrollView = UIScrollView()
+    let contentView = UIView()
+    
     let headerView = UIView()
     let itemViewOne = UIView()
     let itemViewTwo = UIView()
@@ -20,6 +23,7 @@ class UserInfoViewController: GFDataLoadingViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViewController()
+        configureScrollView()
         layoutUI()
         getUserInfo()
     }
@@ -28,6 +32,14 @@ class UserInfoViewController: GFDataLoadingViewController {
         view.backgroundColor = .systemBackground
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissVC))
         navigationItem.rightBarButtonItem = doneButton
+    }
+    
+    func configureScrollView() {
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        scrollView.pinToEdges(of: view)
+        contentView.pinToEdges(of: scrollView)
+        contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor).isActive = true
     }
     
     func getUserInfo() {
@@ -61,18 +73,23 @@ class UserInfoViewController: GFDataLoadingViewController {
         let itemHeight: CGFloat = 140
         let itemViews = [headerView, itemViewOne, itemViewTwo, dateLabel]
         
-        for itemView in itemViews {
-            view.addSubview(itemView)
+        for (index, itemView) in itemViews.enumerated() {
+            contentView.addSubview(itemView)
             itemView.translatesAutoresizingMaskIntoConstraints = false
             
             NSLayoutConstraint.activate([
-                itemView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-                itemView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding)
+                itemView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+                itemView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
             ])
+            
+            // The following code below makes the UIScrollView have an intrinsic height.
+            // This happens because the first and last subview is pinned to the UIScrollView's top and bottom anchor, respectively.
+            if index == 0 { itemViews[index].topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true }
+            if index == itemViews.count - 1 { itemViews[index].bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true }
         }
         
         NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            headerView.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor),
             headerView.heightAnchor.constraint(equalToConstant: 210),
             
             itemViewOne.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: padding),
