@@ -34,6 +34,10 @@ class GFAlertViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.black.withAlphaComponent(0.75)
+        
+        view.addSubview(containerView)
+        containerView.addSubviews(titleLabel, actionButton, messageLabel)
+        
         configureContainerView()
         configureTitleLabel()
         configureActionButton()
@@ -41,8 +45,6 @@ class GFAlertViewController: UIViewController {
     }
     
     func configureContainerView() {
-        view.addSubview(containerView)
-        
         NSLayoutConstraint.activate([
             containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),

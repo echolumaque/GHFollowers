@@ -8,6 +8,5 @@
 import Foundation
 
 protocol UserInfoViewControllerDelegate: AnyObject {
-    func didTapGitHubProfile(for user: User)
-    func didTapGetFollowers(for user: User)
+    func didRequestFollowers(for username: String)
 }

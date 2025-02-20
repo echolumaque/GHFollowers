@@ -9,7 +9,7 @@ import UIKit
 
 class SearchViewController: UIViewController {
     
-    let logoImageview = UIImageView()
+    let logoImageView = UIImageView()
     let userNameTextField = GFTextField()
     let callToActionButton = GFButton(backgroundColor: .systemGreen, title: "Get Followers")
     
@@ -19,6 +19,7 @@ class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        view.addSubviews(logoImageView, userNameTextField, callToActionButton)
         configureLogoImageView()
         configureTextField()
         configureCallToActionButton()
@@ -49,24 +50,22 @@ class SearchViewController: UIViewController {
     }
     
     func configureLogoImageView() {
-        view.addSubview(logoImageview)
-        logoImageview.translatesAutoresizingMaskIntoConstraints = false
-        logoImageview.image = UIImage(resource: .ghLogo)
+        logoImageView.translatesAutoresizingMaskIntoConstraints = false
+        logoImageView.image = UIImage(resource: .ghLogo)
         
         NSLayoutConstraint.activate([
-            logoImageview.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: DeviceTypes.isiPhoneSE || DeviceTypes.isiPhone8Zoomed ? 20 : 80),
-            logoImageview.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            logoImageview.heightAnchor.constraint(equalToConstant: 200),
-            logoImageview.widthAnchor.constraint(equalToConstant: 200)
+            logoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: DeviceTypes.isiPhoneSE || DeviceTypes.isiPhone8Zoomed ? 20 : 80),
+            logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            logoImageView.heightAnchor.constraint(equalToConstant: 200),
+            logoImageView.widthAnchor.constraint(equalToConstant: 200)
         ])
     }
     
     func configureTextField() {
-        view.addSubview(userNameTextField)
         userNameTextField.delegate = self
         
         NSLayoutConstraint.activate([
-            userNameTextField.topAnchor.constraint(equalTo: logoImageview.bottomAnchor, constant: 48),
+            userNameTextField.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 48),
             userNameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
             userNameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
             userNameTextField.heightAnchor.constraint(equalToConstant: 50)
@@ -74,7 +73,6 @@ class SearchViewController: UIViewController {
     }
     
     func configureCallToActionButton() {
-        view.addSubview(callToActionButton)
         callToActionButton.addTarget(self, action: #selector(pushFollowerListVC), for: .touchUpInside)
         
         NSLayoutConstraint.activate([

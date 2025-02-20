@@ -36,7 +36,7 @@ class FavoritesListViewController: GFDataLoadingViewController {
         tableView.rowHeight = 80
         tableView.delegate = self
         tableView.dataSource = self
-        
+        tableView.removeExcessCells()
         tableView.register(FavoriteCell.self, forCellReuseIdentifier: FavoriteCell.reuseID)
     }
     
@@ -50,10 +50,8 @@ class FavoritesListViewController: GFDataLoadingViewController {
                     showEmptyStateView(with: "No Favorites?\nAdd one on the follower screen.", in: view)
                 } else {
                     self.favorites = favorites
-                    DispatchQueue.main.async {
-                        self.tableView.reloadData()
-                        self.view.bringSubviewToFront(self.tableView)
-                    }
+                    self.tableView.reloadDataOnMainThread()
+                    DispatchQueue.main.async { self.view.bringSubviewToFront(self.tableView) }
                 }
                 
             case .failure(let error):
@@ -93,13 +91,14 @@ extension FavoritesListViewController: UITableViewDelegate, UITableViewDataSourc
         // When users tap the insertion (green plus) control or Delete button associated with a UITableViewCell object in the table view, the table view sends this message to the data source, asking it to commit the change.
         guard editingStyle == .delete else { return }
         
-        let favorite = favorites[indexPath.row]
-        favorites.remove(at: indexPath.row)
-        tableView.deleteRows(at: [indexPath], with: .left)
-        
-        PersistenceManager.updateWith(favorite: favorite, actionType: .remove) { [weak self] error in
+        PersistenceManager.updateWith(favorite: favorites[indexPath.row], actionType: .remove) { [weak self] error in
             guard let self else { return }
-            guard let error else { return }
+            guard let error else {
+                favorites.remove(at: indexPath.row)
+                tableView.deleteRows(at: [indexPath], with: .left)
+                
+                return
+            }
             
             presentGFAlertOnMainThread(title: "Unable to remove", message: error.rawValue, buttonTitle: "Ok")
         }

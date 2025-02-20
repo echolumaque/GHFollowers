@@ -68,7 +68,6 @@ class FollowersListViewController: GFDataLoadingViewController {
         searchController.searchBar.placeholder = "Search for a username"
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
-        
     }
     
     func getFollowers(page: Int) {
@@ -189,7 +188,7 @@ extension FollowersListViewController: UISearchResultsUpdating {
     
 }
 
-extension FollowersListViewController: FollowersListViewControllerDelegate {
+extension FollowersListViewController: UserInfoViewControllerDelegate {
     
     func didRequestFollowers(for username: String) {
         self.username = username
