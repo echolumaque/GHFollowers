@@ -10,6 +10,14 @@ import SafariServices
 
 extension UIViewController {
     
+    func presentAdaptiveAlert(for error: any Error) {
+        guard let gfError = error as? GFError else {
+            presentDefaultError()
+            return
+        }
+        presentGFAlert(title: "Bad Stuff Happened", message: gfError.rawValue, buttonTitle: "Ok")
+    }
+    
     func presentGFAlert(title: String, message: String, buttonTitle: String) {
         let alertVC = GFAlertViewController(alertTitle: title, message: message, buttonTitle: buttonTitle)
         alertVC.modalPresentationStyle = .overFullScreen
@@ -25,7 +33,7 @@ extension UIViewController {
         )
         alertVC.modalPresentationStyle = .overFullScreen
         alertVC.modalTransitionStyle = .crossDissolve
-        self.present(alertVC, animated: true)
+        present(alertVC, animated: true)
     }
     
     func presentSafariVC(with url: URL) {

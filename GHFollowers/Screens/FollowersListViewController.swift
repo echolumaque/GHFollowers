@@ -76,33 +76,15 @@ class FollowersListViewController: GFDataLoadingViewController {
         
         Task {
             do {
-                let followers = try await NetworkManager.shared.getFollowers2(for: username, page: page)
+                let followers = try await NetworkManager.shared.getFollowers(for: username, page: page)
                 updateUI(with: followers)
             } catch {
-                guard let gfError = error as? GFError else {
-                    presentDefaultError()
-                    return
-                }
-                presentGFAlert(title: "Bad Stuff Happened", message: gfError.rawValue, buttonTitle: "Ok")
+                presentAdaptiveAlert(for: error)
             }
             
+            isLoadingMoreFollowers = false
             dismissLoadingView()
         }
-        
-//        NetworkManager.shared.getFollowers(for: username, page: page) { [weak self] result in
-//            guard let self else { return }
-//            dismissLoadingView()
-//            
-//            switch result {
-//            case .success(let followers):
-//                updateUI(with: followers)
-//                
-//            case .failure(let failure):
-//                presentGFAlert(title: "Bad Stuff Happened", message: failure.rawValue, buttonTitle: "Ok")
-//            }
-//            
-//            isLoadingMoreFollowers = false
-//        }
     }
     
     func updateUI(with followers: [Follower]) {
@@ -138,17 +120,15 @@ class FollowersListViewController: GFDataLoadingViewController {
     @objc func addButtonTapped() {
         showLoadingView()
         
-        NetworkManager.shared.getUserInfo(for: username) { [weak self] result in
-            guard let self else { return }
-            dismissLoadingView()
-            
-            switch result {
-            case .success(let user):
+        Task {
+            do {
+                let user = try await NetworkManager.shared.getUserInfo(for: username)
                 addUserToFavorites(user: user)
-                
-            case .failure(let error):
-                presentGFAlert(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok")
+            } catch {
+                presentAdaptiveAlert(for: error)
             }
+            
+            dismissLoadingView()
         }
     }
     

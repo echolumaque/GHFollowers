@@ -40,7 +40,8 @@ class GFUserInfoHeaderViewController: UIViewController {
         nameLabel.text = user.name ?? ""
         locationLabel.text = user.location ?? "No locatin"
         bioLabel.text = user.bio ?? "No bio available"
-        bioLabel.numberOfLines = 4
+        bioLabel.numberOfLines = 3
+        bioLabel.lineBreakMode = .byTruncatingTail
         locationImageView.image = UIImage(systemName: SFSymbols.location)
         locationImageView.tintColor = .secondaryLabel
     }

@@ -44,17 +44,15 @@ class UserInfoViewController: GFDataLoadingViewController {
     
     func getUserInfo() {
         showLoadingView()
-        NetworkManager.shared.getUserInfo(for: username) { [weak self] result in
-            guard let self else { return }
-            dismissLoadingView()
-            
-            switch result {
-            case .success(let user):
-                DispatchQueue.main.async { self.configureUIElements(with: user) }
-                
-            case .failure(let failure):
-                presentGFAlert(title: "Someting went wrong", message: failure.rawValue, buttonTitle: "Ok")
+        Task {
+            do {
+                let user = try await NetworkManager.shared.getUserInfo(for: username)
+                configureUIElements(with: user)
+            } catch {
+                presentAdaptiveAlert(for: error)
             }
+            
+            dismissLoadingView()
         }
     }
     
