@@ -18,22 +18,25 @@ class GFButton: UIButton {
         configure()
     }
     
-    convenience init(backgroundColor: UIColor, title: String) {
+    convenience init(color: UIColor, title: String, systemImageName: String) {
         self.init(frame: .zero)
-        self.backgroundColor = backgroundColor
-        setTitle(title, for: .normal)
+        set(color: color, title: title, systemImageName: systemImageName)
     }
     
     private func configure() {
+        configuration = .filled()
+        configuration?.cornerStyle = .medium
         translatesAutoresizingMaskIntoConstraints = false // Set to false to use AutoLayout
-        layer.cornerRadius = 10
-        setTitleColor(.white, for: .normal) // The text color of the button
-        titleLabel?.font = UIFont.preferredFont(forTextStyle: .headline) // The font of the button
     }
     
-    func set(backgroundColor: UIColor, title: String) {
-        self.backgroundColor = backgroundColor
-        setTitle(title, for: .normal)
+    func set(color: UIColor, title: String, systemImageName: String) {
+        configuration?.baseBackgroundColor = color // Like seedColor in Flutter
+        configuration?.baseForegroundColor = .white
+        configuration?.title = title
+        
+        configuration?.image = UIImage(systemName: systemImageName)
+        configuration?.imagePadding = 6
+        configuration?.imagePlacement = .leading
     }
     
 }

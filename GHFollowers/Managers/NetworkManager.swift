@@ -20,6 +20,25 @@ class NetworkManager {
         baseNetworkCall(for: constructedUrl, completed: completed)
     }
     
+    func getFollowers2(for username: String, page: Int) async throws(GFError) -> [Follower] {
+        let constructedUrl = "\(baseURL)\(username)/followers?per_page=100&page=\(page)"
+        
+        guard let accessToken: String = try? Configuration.value(for: "API_KEY") else { throw .unableToComplete }
+        guard let endPoint = URL(string: constructedUrl) else { throw .invalidUsername }
+        
+        do {
+            var networkRequest = URLRequest(url: endPoint)
+            networkRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+            let (data, response) = try await URLSession.shared.data(for: networkRequest)
+           
+            guard let response = response as? HTTPURLResponse, response.statusCode == 200 else { throw GFError.invalidResponse }
+            
+            return try data.decode(to: [Follower].self, dateDecodingStrategy: .iso8601)
+        } catch {
+            throw .invalidData
+        }
+    }
+    
     func getUserInfo(for username: String, completed: @escaping (Result<User, GFError>) -> Void) {
         let constructedUrl = "\(baseURL)\(username)"
         baseNetworkCall(for: constructedUrl, completed: completed)
