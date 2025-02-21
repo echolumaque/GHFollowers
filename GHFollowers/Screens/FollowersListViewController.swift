@@ -46,6 +46,23 @@ class FollowersListViewController: GFDataLoadingViewController {
         navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
+    // Override this method to create a UIContentUnavailableView. Set it to the property called 'contentUnavailableConfiguration'
+    @available(iOS 17.0, *)
+    override func updateContentUnavailableConfiguration(using state: UIContentUnavailableConfigurationState) {
+        if followers.isEmpty && !isLoadingMoreFollowers {
+            var config = UIContentUnavailableConfiguration.empty()
+            config.image = UIImage(systemName: "person.slash")
+            config.text = "No Followers"
+            config.secondaryText = "This user has no followers. Go follow them!"
+            
+            contentUnavailableConfiguration = config
+        } else if isSearching && filteredFollowers.isEmpty {
+            contentUnavailableConfiguration = UIContentUnavailableConfiguration.search()
+        } else {
+            contentUnavailableConfiguration = nil
+        }
+    }
+    
     func configureViewController() {
         view.backgroundColor = .systemBackground
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -91,10 +108,14 @@ class FollowersListViewController: GFDataLoadingViewController {
         self.followers.append(contentsOf: followers)
         hasMoreFollowers = !followers.isEmpty
         
-        if self.followers.isEmpty {
-            let message = "This user doesn't have any followers. Go follow them 😃."
-            DispatchQueue.main.async { self.showEmptyStateView(with: message, in: self.view) }
-            return
+        if #available(iOS 17.0, *) {
+            setNeedsUpdateContentUnavailableConfiguration()
+        } else {
+            if self.followers.isEmpty {
+                let message = "This user doesn't have any followers. Go follow them 😃."
+                DispatchQueue.main.async { self.showEmptyStateView(with: message, in: self.view) }
+                return
+            }
         }
         
         updateData(on: self.followers)
@@ -187,6 +208,7 @@ extension FollowersListViewController: UISearchResultsUpdating {
         isSearching = true
         filteredFollowers = followers.filter { $0.login.lowercased().contains(filter.lowercased()) }
         updateData(on: filteredFollowers)
+        if #available(iOS 17.0, *) { setNeedsUpdateContentUnavailableConfiguration() }
     }
     
 }

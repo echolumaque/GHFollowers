@@ -23,6 +23,21 @@ class FavoritesListViewController: GFDataLoadingViewController {
         getFavorites()
     }
     
+    // Override this method to create a UIContentUnavailableView. Set it to the property called 'contentUnavailableConfiguration'
+    @available(iOS 17.0, *)
+    override func updateContentUnavailableConfiguration(using state: UIContentUnavailableConfigurationState) {
+        if favorites.isEmpty {
+            var config = UIContentUnavailableConfiguration.empty()
+            config.image = UIImage(systemName: "star")
+            config.text = "No Favorites"
+            config.secondaryText = "Add a favorite on the follower list screen"
+            
+            contentUnavailableConfiguration = config
+        } else {
+            contentUnavailableConfiguration = nil
+        }
+    }
+    
     func configureViewController() {
         view.backgroundColor = .systemBackground
         title = "Favorites"
@@ -55,12 +70,21 @@ class FavoritesListViewController: GFDataLoadingViewController {
     }
     
     func updateUI(with favorites: [Follower]) {
-        if favorites.isEmpty {
-            showEmptyStateView(with: "No Favorites?\nAdd one on the follower screen.", in: view)
+        self.favorites = favorites
+        if #available(iOS 17.0, *) {
+            // Tells the view controller to run updateContentUnavailableConfiguration
+            setNeedsUpdateContentUnavailableConfiguration()
         } else {
-            self.favorites = favorites
-            self.tableView.reloadDataOnMainThread()
-            DispatchQueue.main.async { self.view.bringSubviewToFront(self.tableView) }
+            if self.favorites.isEmpty {
+                showEmptyStateView(with: "No Favorites?\nAdd one on the follower screen.", in: view)
+            }
+        }
+        
+        if !self.favorites.isEmpty {
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+                self.view.bringSubviewToFront(self.tableView)
+            }
         }
     }
     
@@ -100,8 +124,12 @@ extension FavoritesListViewController: UITableViewDelegate, UITableViewDataSourc
             guard let error else {
                 favorites.remove(at: indexPath.row)
                 tableView.deleteRows(at: [indexPath], with: .left)
-                if favorites.isEmpty { showEmptyStateView(with: "No Favorites?\nAdd one on the follower screen.", in: view) }
                 
+                if #available(iOS 17.0, *) {
+                    setNeedsUpdateContentUnavailableConfiguration()
+                } else {
+                    if favorites.isEmpty { showEmptyStateView(with: "No Favorites?\nAdd one on the follower screen.", in: view) }
+                }
                 return
             }
             
