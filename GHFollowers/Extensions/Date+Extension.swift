@@ -60,6 +60,10 @@ extension Date {
 
         return "\(dayComponent) at \(timeComponent)"
     }
+    
+    var monthYearFormat: String {
+        formatted(.dateTime.month(.wide).year())
+    }
 
     var day: Int {
         Calendar.gregorian.component(.day, from: self)

@@ -60,10 +60,7 @@ class UserInfoViewController: GFDataLoadingViewController {
         add(childVC: GFUserInfoHeaderViewController(user: user), to: headerView)
         add(childVC: GFRepoItemViewController(user: user, delegate: self), to: itemViewOne)
         add(childVC: GFFollowerItemViewController(user: user, delegate: self), to: itemViewTwo)
-        
-        let outputFormatter = Date.getFormatter(dateFormat: "MMMM yyyy")
-        let parsedDateString = outputFormatter.string(from: user.createdAt)
-        dateLabel.text = "GitHub user since \(parsedDateString)"
+        dateLabel.text = "GitHub user since \(user.createdAt.monthYearFormat)"
     }
     
     func layoutUI() {
