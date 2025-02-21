@@ -56,11 +56,6 @@ class GFEmptyStateView: UIView {
         }
         
         NSLayoutConstraint.activate([
-            messageLabel.centerYAnchor.constraint(equalTo: centerYAnchor, constant: DeviceTypes.isiPhoneSE || DeviceTypes.isiPhone8Zoomed ? -50 : -150),
-            messageLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 40),
-            messageLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -40),
-            messageLabel.heightAnchor.constraint(equalToConstant: 200),
-            
             logoImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: DeviceTypes.isiPhoneSE || DeviceTypes.isiPhone8Zoomed ? 115 : 200),
             logoImageView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: DeviceTypes.isiPhoneSE || DeviceTypes.isiPhone8Zoomed ? 35 : 50),
             
